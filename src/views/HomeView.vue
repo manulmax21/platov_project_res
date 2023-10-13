@@ -1,18 +1,57 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+      <div>
+        <posts-component
+          :PRODUCTS="PRODUCTS"
+          @addToCart="addToCart"
+        ></posts-component>
+      </div>
   </div>
 </template>
-
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+/* eslint-disable */
+import PostsComponent from "@/components/PostsComponent";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
+  /* eslint-disable */
   name: 'HomeView',
   components: {
-    HelloWorld
+    PostsComponent
+  },
+  props:{
+    cart:{
+      type: Object
+    }
+  },
+  data(){
+    return{
+      basket: {},
+    }
+  },
+  computed: {
+    ...mapGetters ([
+      'PRODUCTS'
+    ]),
+  },
+  methods: {
+    ...mapActions([
+      'GET_PRODUCTS_FROM_API',
+      'ADD_TO_CART'
+    ]),
+    addToCart(data){
+      this.ADD_TO_CART(data);
+      this.basket = data;
+      this.$emit('addToCart', this.basket)
+    }
+  },
+  mounted() {
+    this.GET_PRODUCTS_FROM_API()
+        .then((response)=>{
+          if (response.data){
+            console.log('data arrived!')
+          }
+        })
   }
 }
 </script>
